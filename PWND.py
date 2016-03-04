@@ -76,14 +76,8 @@ class Pawn:
 
 
    
-#INCOMPLETE FUNCTIONS
-"""
-WINFOR
-OPENMOVES
-SUCCESSORS
 
-"""
-class board:
+class Board:
     # Represent the gameState pawned
     #  Minimax assumes objects that respond to the following methods:
     #     __str__(): return a unique string describing the state of the game (for use in hash table)
@@ -136,9 +130,9 @@ class board:
         :return: A string that describes the board in the current state.
         """
         s=""
-        for x in range(0,WIDTH):
-            for y in range(0,HEIGHT):
-                s+=self.gameState[x,y]
+        for y in range(0,HEIGHT):
+            for x in range(0,WIDTH):
+                s+=str(self.gameState[x,y])
         return s
 
     
@@ -156,12 +150,25 @@ class board:
     
     
     def isMinNode(self):
+        """ *** needed for search ***
+        :return: True if it's Min's turn to play
+        """
         return self.whoseTurn==BLACK
         
     def isMaxNode(self):
+        """ *** needed for search ***
+        :return: True if it's Max's turn to play
+        """
         return self.whoseTurn==WHITE
    
         
+    
+    def isTerminal(self):
+        """ *** needed for search ***
+        :param node: a game tree node with stored game state
+        :return: a boolean indicating if node is terminal
+        """
+        return self.winFor('X') or self.winFor('O') or (len(self.successors()) == 0)
         
     def winFor(self,player):
         """
@@ -180,31 +187,42 @@ class board:
                 for x in range(0,WIDTH):
                     if(self.gameState[x,HEIGHT-1]==BLACK):
                         won = True
-            #IF there are no available moves for both players
-                #check who has the most pawns
+                        
+            if(len(self.successors()) == 0):#IF there are no available moves for both players
+                bCount = self.count(BLACK)       #check who has the most pawns
+                wCount = self.count(BLACK)
+                if(bCount>wCount):
+                    self.cachedWin = True
+                    self.cachedWinner = player
+                    return True
+                if(wCount>bCount):
+                    self.cachedWin = True
+                    self.cachedWinner = player
+                    return True
+            
             if(won):
                 self.cachedWin = True
                 self.cachedWinner = player
-                return true
+                return True
             else:
-                return false
+                return False
         else:
             return player == self.cachedWinner
         
     #Used to decide who to win for
     def utility(self):
-        """
+        """ *** needed for search ***
         :return: 1 if win for WHITE, -1 for win for BLACK, 0 for draw
         """
         if(self.winFor(WHITE)):
-            return 1
+            return WIDTH
         elif(self.winFor(BLACK)):
-            return -1
+            return -WIDTH
         else:
             return 0
     
     def togglePlayer(self,p):
-        """
+        """ 
         :param p: either 'b' or 'w'
         :return: other players symbol
         else false
@@ -225,12 +243,23 @@ class board:
             return 1
             
     
-    
-    
+    def count(self,color):
+        """ *** needed for search ***
+        Gets the number pawns on the board of a color.
+        :param color: Color we are comparing to search for.
+        :return: Number of color pawns on the board.
+        """
+        count = 0
+        for y in range(0,HEIGHT):
+            for x in range(0,WIDTH):
+                if(self.gameState[x,y]==color):
+                    count+=1
+        return count
 
     
     
-    #MOVEMENTS
+    #MOVEMENTS    
+    
     def inBounds(self,pos):
         """
         Tells if a position is in the game bounds
@@ -239,6 +268,11 @@ class board:
                  false otherwise
         """
         return ((pos.x<WIDTH) & (pos.x>=0) & (pos.y<HEIGHT) & (pos.y>=0))
+    def successors(self):
+        """ *** needed for search ***
+        :return: list of moves available to whoseTurn it is
+        """
+        return [self.move(p,m) for (p,m) in self.openMoves() if (p.color==self.whoseTurn)]
     
     def movePos(self,p,intMove):
         """
@@ -262,19 +296,19 @@ class board:
                      1: attack right relative to player
         :return: True if the move is legal
         """
-        mPos = self.movePos(p,intMove)
-        if(self.inBounds(mPos)!=True):
+        mPos = self.movePos(p,intMove)#board position of move
+        if(self.inBounds(mPos)!=True):#Can't make move out of board bounds
             return False
-        if(p.color != self.whoseTurn):#Can't make move if it's not players pawn
-            return False
+        #if(p.color != self.whoseTurn):#Can't make move if it's not players pawn
+        #    return False
         if(intMove==0):#to move forward the node must be empty
             return (self.gameState[mPos.get()] == EMPTY)
         else:#to attack the node must have an enemy
             return (self.gameState[mPos.get()] == self.togglePlayer(p.color))
     
     def openMoves(self):
-        """
-        Gets a list of all available moves
+        """ *** needed for search ***
+        Gets all legal available moves including those for the oppenent
         """
         arr = []
         for y in range(0,HEIGHT):
@@ -283,16 +317,16 @@ class board:
                 if(t!=None):
                     for z in range(-1,2):
                         if(self.legalMove(t,z)):
-                            arr.append((x,y,z))
+                            #move , #newState
+                            arr.append((t,z))
         return arr
-    
     #Moves forward relative to player
     #Returns a gameState with the change
     def move(self,p,intMove):
-        """
+        """ *** needed for search ***
         Create a new board state with the given move
         :param p: The pawn,of type pawn, to move
-        :param move: What type of move it was
+        :param intMove: What type of move it was
                      0: move forward relative to player
                      -1: attack left relative to player
                      1: attack right relative to player
@@ -300,18 +334,10 @@ class board:
                  a pawn contains the position it was at and its color
                  move is an int with the type of move it did
         """
-        gs = self.gameState.copy()
-        if(intMove==0):#Move Forward
-            gs[p.pos.x,p.pos.y+self.intPlayer(p.color)] = p.color
-        elif(intMove==-1):#Attack left
-            gs[p.pos.x+self.intPlayer(p.color),p.pos.y+self.intPlayer(p.color)] = p.color
-        elif(intMove== 1):#Attack right
-            gs[p.pos.x-self.intPlayer(p.color),p.pos.y+self.intPlayer(p.color)] = p.color
-
-        gs[p.pos.get()] = '-'
-        return (p,intMove),gs
-
-
+        gs = self.gameState.copy()          #copy Board
+        gs[p.pos.get()] = EMPTY             #put position it was at as empty
+        gs[self.movePos(p,intMove).get()] = p.color    #set new position as filled
+        return ((p,intMove),Board(gs,self.togglePlayer(self.whoseTurn)))
 
 
 
