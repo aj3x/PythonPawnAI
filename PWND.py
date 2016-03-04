@@ -144,8 +144,13 @@ class board:
     
     def getPawn(self,x,y):
         """
-        
+        Gives a pawn on the position x,y or returns empty if none exists
+        :param x:
+        :param y:
         """
+        if(self.gameState[x,y]==EMPTY):
+            print("Exception: No pawn on that position")
+            return
         return Pawn(x,y,self.gameState[x,y])
     
     
@@ -238,29 +243,47 @@ class board:
         else false
         """
         return self.gameState[x,y]==whoseTurn
-        
     
-    
-    def forwardPos(self,p):
-        """
-        Takes a 
-        :param p: A Pawn on the board
-        :return:
-        """
-    
-    
-    def legalForward(self,p):
-        """
-        
-        """
     
     
     #MOVEMENTS
-    def canMove(self,p,intMove):
+    def inBounds(self,pos):
         """
-        
+        Tells if a position is in the game bounds
+        :param pos: position to be evauluated is tuple (x,y)
+        :return: true if the position is within the bounds
+                 false otherwise
         """
-        gs[p.pos.x,p.pos.y+]
+        return ((pos.x<WIDTH) & (pos.x>=0) & (pos.y<HEIGHT) & (pos.y>=0))
+    
+    def movePos(self,p,intMove):
+        """
+        Takes a pawn and returns it's relative move position
+        :param p: A Pawn on the board
+        :param intMove: The type of move wanted
+                     0: move forward relative to player
+                     -1: attack left relative to player
+                     1: attack right relative to player
+        :return: A tuple with (x,y) in for the desired move relative to the pawn's position
+        """
+        return pos(p.pos.x-(intMove*self.intPlayer(p.color)),p.pos.y+self.intPlayer(p.color))
+    
+    def legalMove(self,p,intMove):
+        """
+        Tells if a move is legal
+        :param p: Pawn to be moved
+        :param intMove: The type of move wanted
+                     0: move forward relative to player
+                     -1: attack left relative to player
+                     1: attack right relative to player
+        :return: True if the move is legal
+        """
+        mPos = self.movePos(p,intMove)
+        if(intMove==0):#to move forward the node must be empty
+            return (self.inBounds(mPos) & (self.gameState[mPos.get()] == EMPTY))
+        else:#to attack the node must have an enemy
+            return (self.inBounds(mPos) & (self.gameState[mPos.get()] == self.togglePlayer(p.color)))
+    
     #Moves forward relative to player
     #Returns a gameState with the change
     def move(self,p,intMove):
