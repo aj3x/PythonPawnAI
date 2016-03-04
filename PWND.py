@@ -1,3 +1,4 @@
+#CONSTANTS
 BSTARTROW = 1
 WSTARTROW = 3
 WHITE = 'w'
@@ -8,24 +9,73 @@ HEIGHT = 6
 
         
 class pos:
+    # Represent the gameState for tic tac toe.
+    #  Minimax assumes objects that respond to the following methods:
+    #     __str__(): return a unique string describing the state of the game (for use in hash table)
+    #     isTerminal(): checks if the game is at a terminal state
+    #     successors(): returns a list of all legal game states that extend this one by one move
+    #                   in this version, the list consists of a move,state pair
+    #     isMinNode(): returns True if the node represents a state in which Min is to move
+    #     isMaxNode(): returns True if the node represents a state in which Max is to move
     def __init__(self,x,y):
+        """
+        Create a new position.
+        :param x: an x position.
+        :param y: a y position.
+        :return:
+        """
         self.x = x
         self.y = y
     
     def __repr__(self):
+        """
+        Display position in user friendly manner.
+        :return: User friendly representation.
+        """
         return "("+str(self.x)+","+str(self.y)+")"
+    
+    def get(self):
+        """
+        Returns a tuple of position in (x,y) form.
+        :return: Position in form of a tuple (x,y).
+        """
+        return (self.x,self.y);
 
 class Pawn:
     def __init__(self,x,y,color):
+        """
+        
+        """
         self.pos = pos(x,y)
         self.color = color
+    
+    
     def __repr__(self):
-        return str(self.pos)+str(self.color)
-    def isWhite(self):
-        return self.color==WHITE
-    def move(self,pos):
-        self.pos = pos
+        """
+        Displays a string in user friendly manner.
+        :return: User friendly string representation.
+        """
+        return "("+str(self.pos)+","+str(self.color)+")"
         
+        
+    def isColor(self,color):
+        """
+        Compares color to pawn color, returns true if they are the same.
+        :param color: Color either BLACK or WHITE to compare pawn to.
+        :return: True if the pawn color and color are the same.
+        """
+        return self.color==color
+    def move(self,x,y):
+        """
+        Sets the position of the pawn
+        
+        """
+        self.pos.x = x
+        self.pos.y = y
+   
+
+
+   
 #INCOMPLETE FUNCTIONS
 """
 WINFOR
@@ -34,7 +84,7 @@ SUCCESSORS
 
 """
 class board:
-    # Represent the gamestate pawned
+    # Represent the gameState pawned
     #  Minimax assumes objects that respond to the following methods:
     #     __str__(): return a unique string describing the state of the game (for use in hash table)
     #     isTerminal(): checks if the game is at a terminal state
@@ -55,8 +105,8 @@ class board:
                 for y in range(0,HEIGHT):
                     self.gameState[x,y] = EMPTY
             for x in range(0,WIDTH):
-                self.setNode(x,BSTARTROW,BLACK)#Blacks starting row
-                self.setNode(x,WSTARTROW,WHITE)#Whites starting row
+                self.gameState[x,BSTARTROW] = BLACK#Blacks starting row
+                self.gameState[x,WSTARTROW] = WHITE#Whites starting row
                 #whites.append(Board.pawn(Board.pos(x,WSTARTROW),WHITE))
                 #blacks.append(Board.pawn(Board.pos(x,BSTARTROW),BLACK))
         else:
@@ -91,6 +141,15 @@ class board:
                 s+=self.gameState[x,y]
         return s
 
+    
+    def getPawn(self,x,y):
+        """
+        
+        """
+        return Pawn(x,y,self.gameState[x,y])
+    
+    
+    
     def isMinNode(self):
         return self.whoseTurn==BLACK
         
@@ -182,9 +241,26 @@ class board:
         
     
     
+    def forwardPos(self,p):
+        """
+        Takes a 
+        :param p: A Pawn on the board
+        :return:
+        """
+    
+    
+    def legalForward(self,p):
+        """
+        
+        """
     
     
     #MOVEMENTS
+    def canMove(self,p,intMove):
+        """
+        
+        """
+        gs[p.pos.x,p.pos.y+]
     #Moves forward relative to player
     #Returns a gameState with the change
     def move(self,p,intMove):
@@ -200,14 +276,14 @@ class board:
                  move is an int with the type of move it did
         """
         gs = self.gameState.copy()
-        if(intMove==0):#
+        if(intMove==0):#Move Forward
             gs[p.pos.x,p.pos.y+self.intPlayer(p.color)] = p.color
-        elif(intMove==-1):
+        elif(intMove==-1):#Attack left
             gs[p.pos.x+self.intPlayer(p.color),p.pos.y+self.intPlayer(p.color)] = p.color
-        elif(intMove== 1):
+        elif(intMove== 1):#Attack right
             gs[p.pos.x-self.intPlayer(p.color),p.pos.y+self.intPlayer(p.color)] = p.color
 
-        gs[p.pos.x,p.pos.y] = '-'
+        gs[p.pos.get()] = '-'
         return (p,intMove),gs
 
 

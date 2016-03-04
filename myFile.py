@@ -26,7 +26,7 @@ class iterator:
 whites = []
 blacks = []
 b = PWND.board(None)
-
+p = b.getPawn(0,0)
 
 
 
