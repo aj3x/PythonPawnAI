@@ -145,11 +145,11 @@ class board:
     def getPawn(self,x,y):
         """
         Gives a pawn on the position x,y or returns empty if none exists
-        :param x:
-        :param y:
+        :param x: x coordinate on board
+        :param y: y coordinate on board
+        :return: Pawn on the coordinate x,y or None if EMPTY
         """
         if(self.gameState[x,y]==EMPTY):
-            print("Exception: No pawn on that position")
             return
         return Pawn(x,y,self.gameState[x,y])
     
@@ -224,26 +224,10 @@ class board:
         else:
             return 1
             
-    def openMoves(self):
-        """
-        
-        """
-        for x in range(0,WIDTH):
-            for y in range(0,HEIGHT):
-                if(hasTurnPawn(x,y)):
-                    x = x
     
     
     
-    def hasTurnPawn(self,x,y):
-        """
-        :param x: x coordinate on board
-        :param y: y coordinate on board
-        :return: true if the location given has a color equal to whoseTurn it is
-        else false
-        """
-        return self.gameState[x,y]==whoseTurn
-    
+
     
     
     #MOVEMENTS
@@ -279,10 +263,28 @@ class board:
         :return: True if the move is legal
         """
         mPos = self.movePos(p,intMove)
+        if(self.inBounds(mPos)!=True):
+            return False
+        if(p.color != self.whoseTurn):#Can't make move if it's not players pawn
+            return False
         if(intMove==0):#to move forward the node must be empty
-            return (self.inBounds(mPos) & (self.gameState[mPos.get()] == EMPTY))
+            return (self.gameState[mPos.get()] == EMPTY)
         else:#to attack the node must have an enemy
-            return (self.inBounds(mPos) & (self.gameState[mPos.get()] == self.togglePlayer(p.color)))
+            return (self.gameState[mPos.get()] == self.togglePlayer(p.color))
+    
+    def openMoves(self):
+        """
+        Gets a list of all available moves
+        """
+        arr = []
+        for y in range(0,HEIGHT):
+            for x in range(0,WIDTH):
+                t = self.getPawn(x,y)
+                if(t!=None):
+                    for z in range(-1,2):
+                        if(self.legalMove(t,z)):
+                            arr.append((x,y,z))
+        return arr
     
     #Moves forward relative to player
     #Returns a gameState with the change
