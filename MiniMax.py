@@ -1,10 +1,21 @@
 import AlphaBeta
-DEPTH_LIMIT = 10
+DEPTH_LIMIT = 5
 
 
 transpositionTable = dict()
 #(int,(pawn,move))
 def minimax(node,depth=0):
+    """
+    :param node:  a Game object responding to the following methods:
+        str(): return a unique string describing the state of the game (for use in hash table)
+        isTerminal(): checks if the game is at a terminal state
+        utility():
+        successors(): returns a list of all legal game states that extend this one by one move
+                      in this version, the list consists of a move,state pair
+        isMinNode(): returns True if the node represents a state in which Min is to move
+        isMaxNode(): returns True if the node represents a state in which Max is to move
+    :return: a pair, u,m consisting of the minimax utility, and a move that obtains it
+    """
     depth+=1
     global transpositionTable
     s= str(node)
@@ -13,15 +24,15 @@ def minimax(node,depth=0):
     elif node.isTerminal():
         u = node.utility()
         m = None
-    # elif depth > DEPTH_LIMIT:
-    #     if node.isMaxNode():
-            # u,m = argmax([AlphaBeta.boardValue(node),AlphaBeta.boardValue(node)])
-        # elif node.isMinNode():
-            # u,m = argmin([AlphaBeta.boardValue(node),AlphaBeta.boardValue(node)])
-        # else:
-            # print("OhNoes")
-            # return None
-        # return u,m
+    elif depth > DEPTH_LIMIT:
+        if node.isMaxNode():
+            u,m = AlphaBeta.boardValue(node),None
+        elif node.isMinNode():
+            u,m = AlphaBeta.boardValue(node),None
+        else:
+            print("OhNoes")
+            return None
+        return u,m
     else:
         vs = [(minimax(c,depth)[0],m) for (m,c) in node.successors()]  # strip off the move returned by minimax!
         if node.isMaxNode():

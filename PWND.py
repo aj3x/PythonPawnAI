@@ -4,7 +4,7 @@ WSTARTROW = 5
 WHITE = 'w'
 BLACK = 'b'
 EMPTY = '-'
-WIDTH = 3
+WIDTH = 5
 HEIGHT = 6
 
 WIN_VALUE = 100
