@@ -1,11 +1,15 @@
 #CONSTANTS
-BSTARTROW = 1
-WSTARTROW = 3
+BSTARTROW = 0
+WSTARTROW = 5
 WHITE = 'w'
 BLACK = 'b'
 EMPTY = '-'
 WIDTH = 3
 HEIGHT = 6
+
+WIN_VALUE = 100
+PAWN_VALUE = 20
+
 
         
 class pos:
@@ -212,12 +216,12 @@ class Board:
     #Used to decide who to win for
     def utility(self):
         """ *** needed for search ***
-        :return: 1 if win for WHITE, -1 for win for BLACK, 0 for draw
+        :return: +WIN_VALUE if win for WHITE, -WIN_VALUE for win for BLACK, 0 for draw
         """
         if(self.winFor(WHITE)):
-            return WIDTH
+            return WIN_VALUE
         elif(self.winFor(BLACK)):
-            return -WIDTH
+            return -WIN_VALUE
         else:
             return 0
     
@@ -340,5 +344,6 @@ class Board:
         return ((p,intMove),Board(gs,self.togglePlayer(self.whoseTurn)))
 
 
-
+    #alpha-beta
+    #def 
 

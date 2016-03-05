@@ -2,6 +2,7 @@
 import sys
 import PWND
 import MiniMax
+import AlphaBeta
 sys.path.append('C:\\Users\\AJ3X\\Documents\\GitHub\\PythonPawnAI\\Var1')
     
     
@@ -28,13 +29,17 @@ p = b.getPawn(1,1)
 def nextPawn(mn):
     return mn[1][0]
 
-def nextBoard(bn,mn):
+def nextB(bn,mn):
     return bn.move(mn[1][0],mn[1][1])[1]
 
-def nextMinimax(bn):
+def nextM(bn):
     return MiniMax.minimax(bn)
 def nxt():
-    bn = nextBoard(b,m)
-    mn = nextMinimax(bn)
+    bn = nextB(b,m)
+    mn = nextM(bn)
     print(bn.__repr__())
     return bn,mn
+def nt(bn,mn):
+    bn = nextB(bn,mn)
+    mn = nextM(bn)
+    print(bn.__repr__())

@@ -1,5 +1,5 @@
-#import AlphaBeta
-DEPTH_LIMIT = 25
+import AlphaBeta
+DEPTH_LIMIT = 10
 
 
 transpositionTable = dict()
@@ -13,8 +13,15 @@ def minimax(node,depth=0):
     elif node.isTerminal():
         u = node.utility()
         m = None
-    #elif depth > 25:
-    #    return AlphaBeta.boardValue(),
+    # elif depth > DEPTH_LIMIT:
+    #     if node.isMaxNode():
+            # u,m = argmax([AlphaBeta.boardValue(node),AlphaBeta.boardValue(node)])
+        # elif node.isMinNode():
+            # u,m = argmin([AlphaBeta.boardValue(node),AlphaBeta.boardValue(node)])
+        # else:
+            # print("OhNoes")
+            # return None
+        # return u,m
     else:
         vs = [(minimax(c,depth)[0],m) for (m,c) in node.successors()]  # strip off the move returned by minimax!
         if node.isMaxNode():
