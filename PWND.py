@@ -7,8 +7,10 @@ EMPTY = '-'
 WIDTH = 5
 HEIGHT = 6
 
+WIN_FOR = WHITE
+LOS_FOR = BLACK
+
 WIN_VALUE = 100
-PAWN_VALUE = 20
 
 
         
@@ -157,13 +159,13 @@ class Board:
         """ *** needed for search ***
         :return: True if it's Min's turn to play
         """
-        return self.whoseTurn==BLACK
+        return self.whoseTurn==LOS_FOR
         
     def isMaxNode(self):
         """ *** needed for search ***
         :return: True if it's Max's turn to play
         """
-        return self.whoseTurn==WHITE
+        return self.whoseTurn==WIN_FOR
    
         
     
@@ -172,7 +174,7 @@ class Board:
         :param node: a game tree node with stored game state
         :return: a boolean indicating if node is terminal
         """
-        return self.winFor('X') or self.winFor('O') or (len(self.successors()) == 0)
+        return self.winFor(WHITE) or self.winFor(BLACK) or (len(self.successors()) == 0)
         
     def winFor(self,player):
         """
@@ -218,7 +220,7 @@ class Board:
         """ *** needed for search ***
         :return: +WIN_VALUE if win for WHITE, -WIN_VALUE for win for BLACK, 0 for draw
         """
-        if(self.winFor(WHITE)):
+        if(self.winFor(WIN_FOR)):
             return WIN_VALUE
         elif(self.winFor(BLACK)):
             return -WIN_VALUE
